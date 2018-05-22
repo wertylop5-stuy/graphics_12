@@ -1,39 +1,3 @@
-/*========== my_main.c ==========
-
-  This is the only file you need to modify in order
-  to get a working mdl project (for now).
-
-  my_main.c will serve as the interpreter for mdl.
-  When an mdl script goes through a lexer and parser,
-  the resulting operations will be in the array op[].
-
-  Your job is to go through each entry in op and perform
-  the required action from the list below:
-
-  push: push a new origin matrix onto the origin stack
-
-  pop: remove the top matrix on the origin stack
-
-  move/scale/rotate: create a transformation matrix
-                     based on the provided values, then
-                     multiply the current top of the
-                     origins stack by it.
-
-  box/sphere/torus: create a solid object based on the
-                    provided values. Store that in a
-                    temporary matrix, multiply it by the
-                    current top of the origins stack, then
-                    call draw_polygons.
-
-  line: create a line based on the provided values. Store
-        that in a temporary matrix, multiply it by the
-        current top of the origins stack, then call draw_lines.
-
-  save: call save_extension with the provided filename
-
-  display: view the screen
-  =========================*/
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -51,6 +15,8 @@
 #include "y.tab.h"
 
 void my_main() {
+	pass_one();
+	pass_two();
 	struct Matrix *m = new_matrix(4, 1000);
 	struct Rcs_stack *s = new_rcs_stack(3);
 	struct Light *l = new_light(67, 132, 75, 0, 255, 0, 1, 1, 1);
@@ -64,6 +30,7 @@ void my_main() {
 	float sReflect[3];
 	//float step = 15;
 	//float theta;
+	char anim_on = 0;
 	
 	aReflect[RED] = 0.1;
 	aReflect[GREEN] = 0.1;
@@ -196,6 +163,22 @@ void my_main() {
 		
 		case DISPLAY:
 			display(f);
+		break;
+		
+		case SETKNOBS:
+			
+		break;
+		
+		case FRAMES:
+			anim_on = 1;
+		break;
+		
+		case VARY:
+			
+		break;
+		
+		case BASENAME:
+			
 		break;
 	};
 	x++;
