@@ -122,12 +122,17 @@ struct command
   } op;
 };
 
-
-
+struct vary_node {
+	char name[128];
+	float value;
+	struct vary_node *next;
+};
 
 
 extern struct command op[MAX_COMMANDS];
 
+void pass_one(int *tot_frames, char *anim_name, int max_len);
+struct vary_node** pass_two();
 void print_pcode();
 void my_main();
 #endif

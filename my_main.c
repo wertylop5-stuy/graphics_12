@@ -14,9 +14,45 @@
 
 #include "y.tab.h"
 
+void pass_one(int *tot_frames, char *anim_name, int max_len) {
+	char vary_found = 0;
+	int x = 0;
+	while ( op[x].opcode != 0 ) {
+	switch(op[x].opcode) {
+		case FRAMES:
+			(*tot_frames) = op[x].op.frames.num_frames;
+		break;
+		
+		case VARY:
+			vary_found = 1;
+		break;
+		
+		case BASENAME:
+			strncpy(anim_name, op[x].op.basename.p->name,
+					max_len);
+		break;
+	}
+	}
+	
+	if (vary_found && *tot_frames > -1) {
+		fprintf(stderr, "ERROR: vary command found, but number of frames not specified\n");
+		exit(1);
+	}
+}
+
+struct vary_node** pass_two() {
+	return 0;
+}
+
 void my_main() {
-	pass_one();
+	int tot_frames = -1;	//if this still = -1, then user doesn't want animation
+	char anim_name[128];
+	strncpy(anim_name, "default", sizeof(anim_name));
+	
+	//look for animation commands
+	pass_one(&tot_frames, anim_name, 128);
 	pass_two();
+	
 	struct Matrix *m = new_matrix(4, 1000);
 	struct Rcs_stack *s = new_rcs_stack(3);
 	struct Light *l = new_light(67, 132, 75, 0, 255, 0, 1, 1, 1);
