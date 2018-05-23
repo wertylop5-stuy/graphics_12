@@ -132,7 +132,7 @@ struct vary_node {
 extern struct command op[MAX_COMMANDS];
 
 void pass_one(int *tot_frames, char *anim_name, int max_len);
-struct vary_node** pass_two();
+struct vary_node** pass_two(int tot_frames);
 void print_pcode();
 void my_main();
 #endif

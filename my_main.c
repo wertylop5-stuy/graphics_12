@@ -21,27 +21,48 @@ void pass_one(int *tot_frames, char *anim_name, int max_len) {
 	switch(op[x].opcode) {
 		case FRAMES:
 			(*tot_frames) = op[x].op.frames.num_frames;
+			printf("frames found: %d\n", *tot_frames);
 		break;
 		
 		case VARY:
 			vary_found = 1;
+			printf("vary found\n");
 		break;
 		
 		case BASENAME:
 			strncpy(anim_name, op[x].op.basename.p->name,
 					max_len);
+			printf("basename found: %s\n", anim_name);
 		break;
 	}
+	x++;
 	}
 	
-	if (vary_found && *tot_frames > -1) {
+	if (vary_found && *tot_frames == -1) {
 		fprintf(stderr, "ERROR: vary command found, but number of frames not specified\n");
 		exit(1);
 	}
 }
 
-struct vary_node** pass_two() {
-	return 0;
+struct vary_node** pass_two(int tot_frames) {
+	struct vary_node **res = (struct vary_node **)malloc(
+		tot_frames * sizeof(struct vary_node *));
+	
+	int x;
+	for (x = 0; x < tot_frames; x++) {
+		res[x] = 0;
+	}
+	
+	while ( op[x].opcode != 0 ) {
+	switch(op[x].opcode) {
+		case VARY:
+			char *knob = op[x].op.vary.p->name;
+		break;
+	}
+	x++;
+	}
+	
+	return res;
 }
 
 void my_main() {
@@ -51,7 +72,7 @@ void my_main() {
 	
 	//look for animation commands
 	pass_one(&tot_frames, anim_name, 128);
-	pass_two();
+	struct vary_node *vary_arr = pass_two();
 	
 	struct Matrix *m = new_matrix(4, 1000);
 	struct Rcs_stack *s = new_rcs_stack(3);
@@ -204,19 +225,7 @@ void my_main() {
 		case SETKNOBS:
 			
 		break;
-		
-		case FRAMES:
-			anim_on = 1;
-		break;
-		
-		case VARY:
-			
-		break;
-		
-		case BASENAME:
-			
-		break;
-	};
+		};
 	x++;
 	}
 	
