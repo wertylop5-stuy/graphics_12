@@ -48,16 +48,56 @@ struct vary_node** pass_two(int tot_frames) {
 	struct vary_node **res = (struct vary_node **)malloc(
 		tot_frames * sizeof(struct vary_node *));
 	
+	//keep tracks of the tail of the linked lists
+	struct vary_node* tails[tot_frames];
+	memset(res, 0, sizeof(res));
+	
 	int x;
 	for (x = 0; x < tot_frames; x++) {
 		res[x] = 0;
 	}
 	
+	x = 0;
 	while ( op[x].opcode != 0 ) {
 	switch(op[x].opcode) {
-		case VARY:
-			char *knob = op[x].op.vary.p->name;
-		break;
+	case VARY:
+	{
+		char *knob = op[x].op.vary.p->name;
+		printf("Accessing knob: %s\n", knob);
+		
+		float cur_frame;
+		float step = (op[x].op.vary.end_val - op[x].op.vary.start_val) /
+			(op[x].op.vary.end_frame - op[x].op.vary.start_frame);
+		for (cur_frame = op[x].op.vary.start_frame;
+				cur_frame <= op[x].op.vary.end_frame;
+				cur_frame++) {
+			/*
+			 * If null, create a element and edit it directly.
+			 * 
+			 * If not null, create new element and 
+			 * have prev->next point to new element
+			 * */
+			if (res[cur_frame] == 0) {
+				res[cur_frame] == (struct vary_node *)malloc(sizeof(struct vary_node));
+				strncpy(knob, res[cur_frame]->name, strlen(knob));
+				res[cur_frame]->value = op[x].op.vary.start_val+
+					(set*(cur_frames-op[x].op.vary.start_frame));
+				res[cur_frame]->next = 0;
+				tails[curframe] = res[cur_frame];
+			}
+			else {
+				struct vary_node *temp = (struct vary_node *)malloc(sizeof(struct vary_node));
+				strncpy(knob, temp->name, strlen(knob));
+				temp->value = op[x].op.vary.start_val+
+					(set*(cur_frames-op[x].op.vary.start_frame));
+				temp->next = 0;
+				tails[curframe] = temp;
+				res[cur_frame]->next = temp;
+				res[cur_frame] = temp;
+			}
+		}
+	}
+	break;
 	}
 	x++;
 	}
@@ -72,7 +112,7 @@ void my_main() {
 	
 	//look for animation commands
 	pass_one(&tot_frames, anim_name, 128);
-	struct vary_node *vary_arr = pass_two();
+	struct vary_node **vary_arr = pass_two(tot_frames);
 	
 	struct Matrix *m = new_matrix(4, 1000);
 	struct Rcs_stack *s = new_rcs_stack(3);

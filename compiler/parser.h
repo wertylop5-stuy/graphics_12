@@ -96,16 +96,16 @@ struct command
       SYMTAB *p;
     } save_knobs;
     struct {
-      double start_frame, end_frame;
+      float start_frame, end_frame;
       SYMTAB *knob_list0;
       SYMTAB *knob_list1;
     } tween;
     struct {
-      double num_frames;
+      float num_frames;
     }frames;
     struct {
       SYMTAB *p;
-      double start_frame, end_frame, start_val, end_val;
+      float start_frame, end_frame, start_val, end_val;
     } vary;
     struct {
       SYMTAB *p;
@@ -114,10 +114,10 @@ struct command
       SYMTAB *p;
     } shading;
     struct {
-      double value;
+      float value;
     } setknobs;
     struct {
-      double value;
+      float value;
     } focal;
   } op;
 };
