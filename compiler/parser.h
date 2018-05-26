@@ -133,6 +133,8 @@ extern struct command op[MAX_COMMANDS];
 
 void pass_one(int *tot_frames, char *anim_name, int max_len);
 struct vary_node** pass_two(int tot_frames);
+void process_knobs(struct vary_node **knobs, int cur_frame);
 void print_pcode();
 void my_main();
+
 #endif

@@ -119,6 +119,9 @@ struct vary_node** pass_two(int tot_frames) {
 	return res;
 }
 
+void process_knobs(struct vary_node **knobs, int cur_frame) {
+}
+
 void my_main() {
 	int tot_frames = -1;	//if this still = -1, then user doesn't want animation
 	char anim_name[128];
@@ -126,7 +129,7 @@ void my_main() {
 	
 	//look for animation commands
 	pass_one(&tot_frames, anim_name, 128);
-	struct vary_node **vary_arr = pass_two(tot_frames);
+	struct vary_node **knobs = pass_two(tot_frames);
 	
 	struct Matrix *m = new_matrix(4, 1000);
 	struct Rcs_stack *s = new_rcs_stack(3);
@@ -157,6 +160,9 @@ void my_main() {
 	clear(f, z);
 	pixel_color(&pixel, 0, 0, 0);
 		
+	int cur_frame;
+	for (cur_frame = 0; cur_frame < tot_frames; cur_frame++) {
+	process_knobs(knobs, cur_frame);
 	int x = 0;
 	while ( op[x].opcode != 0 ) {
 	switch(op[x].opcode) {
@@ -280,6 +286,7 @@ void my_main() {
 		break;
 		};
 	x++;
+	}
 	}
 	
 	free_light(l);
