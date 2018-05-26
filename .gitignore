@@ -2,6 +2,7 @@
 exec
 *.png
 *.ppm
+compile_commands.json
 
 # Compiler (flex/bison) output
 lex.yy.c

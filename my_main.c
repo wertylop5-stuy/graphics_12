@@ -50,7 +50,7 @@ struct vary_node** pass_two(int tot_frames) {
 	
 	//keep tracks of the tail of the linked lists
 	struct vary_node* tails[tot_frames];
-	memset(res, 0, sizeof(res));
+	memset(tails, 0, sizeof(tails));
 	
 	int x;
 	for (x = 0; x < tot_frames; x++) {
@@ -63,14 +63,16 @@ struct vary_node** pass_two(int tot_frames) {
 	case VARY:
 	{
 		char *knob = op[x].op.vary.p->name;
-		printf("Accessing knob: %s\n", knob);
+		printf("Accessing knob: %s, with len %lu\n", knob, strlen(knob));
 		
-		float cur_frame;
+		int cur_frame;
+		float cur;	//cuz frames are floats?
 		float step = (op[x].op.vary.end_val - op[x].op.vary.start_val) /
 			(op[x].op.vary.end_frame - op[x].op.vary.start_frame);
-		for (cur_frame = op[x].op.vary.start_frame;
-				cur_frame <= op[x].op.vary.end_frame;
-				cur_frame++) {
+		for (cur = op[x].op.vary.start_frame;
+				cur <= op[x].op.vary.end_frame;
+				cur++) {
+			cur_frame = (int)cur;
 			/*
 			 * If null, create a element and edit it directly.
 			 * 
@@ -78,28 +80,40 @@ struct vary_node** pass_two(int tot_frames) {
 			 * have prev->next point to new element
 			 * */
 			if (res[cur_frame] == 0) {
-				res[cur_frame] == (struct vary_node *)malloc(sizeof(struct vary_node));
-				strncpy(knob, res[cur_frame]->name, strlen(knob));
+				res[cur_frame] = (struct vary_node *)malloc(sizeof(struct vary_node));
+				strncpy(res[cur_frame]->name, knob, strlen(knob));
 				res[cur_frame]->value = op[x].op.vary.start_val+
-					(set*(cur_frames-op[x].op.vary.start_frame));
+					(step*(cur-op[x].op.vary.start_frame));
 				res[cur_frame]->next = 0;
-				tails[curframe] = res[cur_frame];
+				tails[cur_frame] = res[cur_frame];
 			}
 			else {
 				struct vary_node *temp = (struct vary_node *)malloc(sizeof(struct vary_node));
-				strncpy(knob, temp->name, strlen(knob));
+				strncpy(temp->name, knob, strlen(knob));
 				temp->value = op[x].op.vary.start_val+
-					(set*(cur_frames-op[x].op.vary.start_frame));
+					(step*(cur-op[x].op.vary.start_frame));
 				temp->next = 0;
-				tails[curframe] = temp;
-				res[cur_frame]->next = temp;
-				res[cur_frame] = temp;
+				
+				tails[cur_frame]->next = temp;
+				tails[cur_frame] = temp;
 			}
 		}
 	}
 	break;
 	}
 	x++;
+	}
+	
+	x = 0;
+	for (; x < tot_frames; x++) {
+		printf("Frame %d\n", x);
+		if (res[x] != 0) {
+			struct vary_node const * temp = res[x];
+			while (temp != 0) {
+				printf("knob %s with value %f\n", temp->name, temp->value);
+				temp = temp->next;
+			}
+		}
 	}
 	
 	return res;
@@ -127,7 +141,6 @@ void my_main() {
 	float sReflect[3];
 	//float step = 15;
 	//float theta;
-	char anim_on = 0;
 	
 	aReflect[RED] = 0.1;
 	aReflect[GREEN] = 0.1;
