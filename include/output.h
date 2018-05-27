@@ -19,4 +19,8 @@ void display(Frame f);
 
 void save_png(Frame f, char *name);
 
+void save_anim(char *anim_name, char *frame_dir);
+
+void view_anim(char *anim_name, char *frame_dir);
+
 #endif

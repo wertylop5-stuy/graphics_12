@@ -63,7 +63,7 @@ struct vary_node** pass_two(int tot_frames) {
 	case VARY:
 	{
 		char *knob = op[x].op.vary.p->name;
-		printf("Accessing knob: %s, with len %lu\n", knob, strlen(knob));
+		//printf("Accessing knob: %s, with len %lu\n", knob, strlen(knob));
 		
 		int cur_frame;
 		float cur;	//cuz frames are floats?
@@ -106,11 +106,11 @@ struct vary_node** pass_two(int tot_frames) {
 	
 	x = 0;
 	for (; x < tot_frames; x++) {
-		printf("Frame %d\n", x);
+		//printf("Frame %d\n", x);
 		if (res[x] != 0) {
 			struct vary_node const * temp = res[x];
 			while (temp != 0) {
-				printf("knob %s with value %f\n", temp->name, temp->value);
+				//printf("knob %s with value %f\n", temp->name, temp->value);
 				temp = temp->next;
 			}
 		}
@@ -120,6 +120,12 @@ struct vary_node** pass_two(int tot_frames) {
 }
 
 void process_knobs(struct vary_node **knobs, int cur_frame) {
+	struct vary_node *temp = knobs[cur_frame];
+	while (temp != 0) {
+		printf("on knob: %s\n", temp->name);
+		set_value(lookup_symbol(temp->name), temp->value);
+		temp = temp->next;
+	}
 }
 
 void my_main() {
@@ -131,9 +137,9 @@ void my_main() {
 	pass_one(&tot_frames, anim_name, 128);
 	struct vary_node **knobs = pass_two(tot_frames);
 	
-	struct Matrix *m = new_matrix(4, 1000);
-	struct Rcs_stack *s = new_rcs_stack(3);
-	struct Light *l = new_light(67, 132, 75, 0, 255, 0, 1, 1, 1);
+	//struct Matrix *m = new_matrix(4, 1000);
+	struct Rcs_stack *s;
+	struct Light *l;
 	float view_vect[] = {0, 0, 1};
 	
 	Frame f;
@@ -161,7 +167,13 @@ void my_main() {
 	pixel_color(&pixel, 0, 0, 0);
 		
 	int cur_frame;
+	char frame_name[256];
 	for (cur_frame = 0; cur_frame < tot_frames; cur_frame++) {
+	s = new_rcs_stack(3);
+	l = new_light(67, 132, 75, 0, 255, 0, 1, 1, 1);
+	clear(f, z);
+	
+	printf("frame %d\n", cur_frame);
 	process_knobs(knobs, cur_frame);
 	int x = 0;
 	while ( op[x].opcode != 0 ) {
@@ -177,7 +189,16 @@ void my_main() {
 		case MOVE:
 		{
 			double *temp = op[x].op.move.d;
-			struct Matrix *t = move(temp[0], temp[1], temp[2]);
+			struct Matrix *t = move(
+				temp[0] * (op[x].op.move.p ?
+					op[x].op.move.p->s.value :
+					1),
+				temp[1] * (op[x].op.move.p ?
+					op[x].op.move.p->s.value :
+					1),
+				temp[2] * (op[x].op.move.p ?
+					op[x].op.move.p->s.value :
+					1));
 			
 			matrix_mult(peek(s), t);
 			free_matrix(peek(s));
@@ -190,7 +211,16 @@ void my_main() {
 		case SCALE:
 		{
 			double *temp = op[x].op.scale.d;
-			struct Matrix *t = scale(temp[0], temp[1], temp[2]);
+			struct Matrix *t = scale(
+				temp[0] * (op[x].op.scale.p ?
+					op[x].op.scale.p->s.value :
+					1),
+				temp[1] * (op[x].op.scale.p ?
+					op[x].op.scale.p->s.value :
+					1),
+				temp[2] * (op[x].op.scale.p ?
+					op[x].op.scale.p->s.value :
+					1));
 			
 			matrix_mult(peek(s), t);
 			free_matrix(peek(s));
@@ -204,9 +234,12 @@ void my_main() {
 		{
 			//why is axis defined as a double lmao
 			struct Matrix *t = rotate(
-					op[x].op.rotate.axis,
-					op[x].op.rotate.degrees
-					);
+				op[x].op.rotate.axis,
+				op[x].op.rotate.degrees *
+			       		(op[x].op.rotate.p ?
+					op[x].op.rotate.p->s.value :
+					1) 
+				);
 			
 			matrix_mult(peek(s), t);
 			free_matrix(peek(s));
@@ -280,16 +313,23 @@ void my_main() {
 		case DISPLAY:
 			display(f);
 		break;
-		
-		case SETKNOBS:
-			
-		break;
 		};
 	x++;
 	}
-	}
+	//save the frame
+	memset(frame_name, 0, sizeof(frame_name));
+	snprintf(frame_name, sizeof(frame_name), "%s%03d%s.png", FRAME_DIR, cur_frame, anim_name);
+	printf("%s\n", frame_name);
+	save_png(f, frame_name);
 	
 	free_light(l);
 	free_stack(s);
-	free_matrix(m);
+	}
+	
+	save_anim(anim_name, FRAME_DIR);
+	view_anim(anim_name, FRAME_DIR);
+	
+	//free_light(l);
+	//free_stack(s);
+	//free_matrix(m);
 }

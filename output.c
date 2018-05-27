@@ -54,3 +54,21 @@ void save_png(Frame f, char *name) {
 	pclose(file);
 }
 
+void save_anim(char *anim_name, char *frame_dir) {
+	char temp[128];
+	sprintf(temp, "convert %s*%s.png %s.gif",
+			frame_dir, anim_name, anim_name);
+	FILE *file;
+	file = popen(temp, "w");
+	pclose(file);
+}
+
+void view_anim(char *anim_name, char *frame_dir) {
+	char temp[128];
+	sprintf(temp, "animate %s*%s.png",
+			frame_dir, anim_name);
+	FILE *file;
+	file = popen(temp, "w");
+	pclose(file);
+}
+

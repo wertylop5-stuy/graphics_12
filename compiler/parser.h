@@ -5,6 +5,7 @@
 #include "../include/matrix.h"
 
 #define MAX_COMMANDS 512
+#define FRAME_DIR "frames/"
 
 extern int lastop;
 

@@ -1,6 +1,6 @@
 OBJS = draw.o output.o matrix.o parser.o shapes.o rcs.o lighting.o vmath.o symtab.o print_pcode.o my_main.o
 CC = gcc
-OUTPUT = picture.ppm
+OUTPUT = picture.ppm *.gif
 EXEC = exec
 MATH_LIB = -lm
 SCRIPT=test_anim.mdl
@@ -61,4 +61,5 @@ clean:
 	rm -rf y.tab.*
 	rm -rf lex.yy.c
 	rm -rf mdl.dSYM
+	rm -rf frames/*
 
