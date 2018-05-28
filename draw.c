@@ -12,7 +12,8 @@ void pixel_color(struct Pixel *p, unsigned char r,
 
 void plot_point(Frame grid, zbuffer b, int x, int y, float z, struct Pixel *p) {
 	//printf("Plotting %d, %d (%d, %d)\n", x, IMG_HEIGHT-1-y, x, y);
-	if (x > -1 && y > -1 && b[IMG_HEIGHT-1-y][x] < z) {
+	if (x > -1 && y > -1 && x < IMG_WIDTH && y < IMG_HEIGHT &&
+			b[IMG_HEIGHT-1-y][x] < z) {
 		grid[IMG_HEIGHT-1-y][x] = *p;
 		b[IMG_HEIGHT-1-y][x] = z;
 	}

@@ -1,0 +1,27 @@
+frames 100
+basename boop
+push
+move 50 250 0
+push
+move 150 0 0 ball1
+move -150 0 0 ball1r
+rotate z -180 rot1
+rotate z 180 rot1r
+vary ball1 0 25 0 1
+vary rot1 0 25 0 1
+vary ball1r 76 100 0 1
+vary rot1r 76 100 0 1
+sphere 0 0 0 50
+pop
+move 250 0 0
+push
+vary ball2 26 50 0 1
+vary rot2 26 50 0 1
+vary ball2r 51 75 0 1
+vary rot2r 51 75 0 1
+move 150 0 0 ball2
+move -150 0 0 ball2r
+rotate z -180 rot2
+rotate z 180 rot2r
+sphere 0 0 0 50
+

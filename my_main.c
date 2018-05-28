@@ -135,7 +135,10 @@ void my_main() {
 	
 	//look for animation commands
 	pass_one(&tot_frames, anim_name, 128);
-	struct vary_node **knobs = pass_two(tot_frames);
+	struct vary_node **knobs;
+	if (tot_frames > 0) {
+		knobs = pass_two(tot_frames);
+	}
 	
 	//struct Matrix *m = new_matrix(4, 1000);
 	struct Rcs_stack *s;
@@ -168,13 +171,16 @@ void my_main() {
 		
 	int cur_frame;
 	char frame_name[256];
+	if (tot_frames == -1) tot_frames = 1;
 	for (cur_frame = 0; cur_frame < tot_frames; cur_frame++) {
 	s = new_rcs_stack(3);
 	l = new_light(67, 132, 75, 0, 255, 0, 1, 1, 1);
 	clear(f, z);
 	
 	printf("frame %d\n", cur_frame);
-	process_knobs(knobs, cur_frame);
+	if (tot_frames > 1) {
+		process_knobs(knobs, cur_frame);
+	}
 	int x = 0;
 	while ( op[x].opcode != 0 ) {
 	switch(op[x].opcode) {
@@ -316,18 +322,22 @@ void my_main() {
 		};
 	x++;
 	}
-	//save the frame
-	memset(frame_name, 0, sizeof(frame_name));
-	snprintf(frame_name, sizeof(frame_name), "%s%03d%s.png", FRAME_DIR, cur_frame, anim_name);
-	printf("%s\n", frame_name);
-	save_png(f, frame_name);
+	if (tot_frames > 1) {
+		//save the frame
+		memset(frame_name, 0, sizeof(frame_name));
+		snprintf(frame_name, sizeof(frame_name), "%s%04d%s.png", FRAME_DIR, cur_frame, anim_name);
+		printf("%s\n", frame_name);
+		save_png(f, frame_name);
+	}
 	
 	free_light(l);
 	free_stack(s);
 	}
 	
-	save_anim(anim_name, FRAME_DIR);
-	view_anim(anim_name, FRAME_DIR);
+	if (tot_frames > 1) {
+		save_anim(anim_name, FRAME_DIR);
+		view_anim(anim_name, FRAME_DIR);
+	}
 	
 	//free_light(l);
 	//free_stack(s);
